@@ -2,6 +2,7 @@ import SectionTitle from "../common/SectionTitle";
 import ProductCard from "./ProductCard";
 
 import { featuredProducts } from "../../data/products";
+import Button from "../common/Button";
 
 function FeaturedSection() {
   const featuredItem = featuredProducts.find((item) => item.featured);
@@ -87,22 +88,7 @@ function FeaturedSection() {
           mt-10
         "
         >
-          <button
-            className="
-            h-[54px]
-            px-8
-            rounded-2xl
-            border
-            border-white/10
-            bg-white/[0.02]
-            text-white/70
-            hover:bg-white/[0.05]
-            hover:text-white
-            transition-all
-          "
-          >
-            View all products
-          </button>
+          <Button text="View All Products" variant="secondary"/>
         </div>
       </div>
     </section>

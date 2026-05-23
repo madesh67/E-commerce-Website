@@ -5,7 +5,7 @@ export const featuredProducts = [
     subtitle: "Brushed merino - Camel",
     price: "$280",
     featured: true,
-    image: "../../../src/assets/images/wool_overshirt.png",
+    image: "../../../src/assets/images/wool_overshirt.jpg",
   },
 
   {

@@ -43,3 +43,15 @@ body {
     transform: translateX(-50%);
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+section {
+  will-change: transform, opacity;
+}

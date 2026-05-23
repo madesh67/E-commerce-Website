@@ -18,7 +18,7 @@ function ProductCard({
         border-white/10
         bg-[#111118]
         rounded-[28px]
-        hover:border-white/20
+        hover:border-[#7B5EA7]
         hover:-translate-y-1
         transition-all
         duration-300
