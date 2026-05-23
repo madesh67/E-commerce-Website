@@ -1,13 +1,30 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { FiArrowRight, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 import SectionTitle from "../common/SectionTitle";
 import CategoryCard from "./CategoryCard";
 
-import { categories } from "../../data/categories";
+import { getHomepage } from "../../services/homeApi";
 
 function CategorySection() {
   const scrollRef = useRef();
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const data = await getHomepage();
+
+        setCategories(data.categories || []);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    loadCategories();
+  }, []);
 
   const scrollLeft = () => {
     scrollRef.current.scrollBy({
@@ -22,6 +39,16 @@ function CategorySection() {
       behavior: "smooth",
     });
   };
+
+  if (!categories.length) {
+    return (
+      <section className="section-spacing">
+        <div className="container-custom">
+          <p className="text-white/40">Loading...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section-spacing overflow-hidden">
@@ -38,13 +65,11 @@ function CategorySection() {
           mb-10
         "
         >
-          {/* TITLE */}
           <SectionTitle
             title="Shop by category"
             subtitle="Curated essentials designed for modern wardrobes"
           />
 
-          {/* CONTROLS */}
           <div
             className="
             flex
@@ -52,7 +77,6 @@ function CategorySection() {
             gap-3
           "
           >
-            {/* LEFT */}
             <button
               onClick={scrollLeft}
               className="
@@ -74,7 +98,6 @@ function CategorySection() {
               <FiChevronLeft size={18} />
             </button>
 
-            {/* RIGHT */}
             <button
               onClick={scrollRight}
               className="
@@ -95,7 +118,7 @@ function CategorySection() {
           </div>
         </div>
 
-        {/* CATEGORY ROW */}
+        {/* ROW */}
         <div
           ref={scrollRef}
           className="
@@ -108,11 +131,19 @@ function CategorySection() {
           "
         >
           {categories.map((item, index) => (
-            <CategoryCard key={index} item={item} index={index} />
+            <CategoryCard
+              key={item.id}
+              item={{
+                ...item,
+
+                image: item.image_url,
+              }}
+              index={index}
+            />
           ))}
         </div>
 
-        {/* BOTTOM INFO */}
+        {/* FOOTER */}
         <div
           className="
           flex
@@ -125,7 +156,6 @@ function CategorySection() {
           border-white/5
         "
         >
-          {/* LEFT */}
           <p
             className="
             text-sm
@@ -138,7 +168,6 @@ function CategorySection() {
             silhouettes, and modern essentials.
           </p>
 
-          {/* RIGHT */}
           <button
             className="
             hidden

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import heroImages from "../../data/heroImages";
-import heroProducts from "../../data/heroProducts";
 import { FiArrowRight } from "react-icons/fi";
+
+import { getHomepage } from "../../services/homeApi";
 
 function HeroGallery() {
   const [current, setCurrent] = useState(0);
-  const activeProduct = heroProducts[current];
+
+  // DATABASE HERO DATA
+  const [heroImages, setHeroImages] = useState([]);
 
   // FLOATING CARD
   const [showCard, setShowCard] = useState(false);
@@ -25,20 +27,41 @@ function HeroGallery() {
 
   const containerRef = useRef(null);
 
+  // LOAD FROM API
+  useEffect(() => {
+    async function loadHero() {
+      try {
+        const data = await getHomepage();
+
+        setHeroImages(data.hero || []);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    loadHero();
+  }, []);
+
   // AUTO SLIDE
   useEffect(() => {
+    if (!heroImages.length) return;
+
     const interval = setInterval(() => {
       setCurrent((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1));
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [heroImages]);
 
-  // SMOOTH FLOATING ANIMATION
+  // ACTIVE PRODUCT
+  const activeProduct = heroImages[current] || {};
+
+  // SMOOTH FLOATING
   useEffect(() => {
     const animate = () => {
       setCardPosition((prev) => ({
         x: prev.x + (targetPosition.current.x - prev.x) * 0.08,
+
         y: prev.y + (targetPosition.current.y - prev.y) * 0.08,
       }));
 
@@ -56,9 +79,18 @@ function HeroGallery() {
 
     targetPosition.current = {
       x: e.clientX - rect.left,
+
       y: e.clientY - rect.top,
     };
   };
+
+  if (!heroImages.length) {
+    return (
+      <div className="h-full flex items-center justify-center text-white/40">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div
@@ -76,7 +108,7 @@ function HeroGallery() {
         bg-[#0f0f13]
       "
     >
-      {/* SLIDER TRACK */}
+      {/* TRACK */}
       <div
         className="
           flex
@@ -89,69 +121,65 @@ function HeroGallery() {
           transform: `translateX(-${current * 100}%)`,
         }}
       >
-        {heroImages.map((image, index) => (
+        {heroImages.map((item, index) => (
           <div
-            key={index}
+            key={item.id}
             className="
-              relative
-              
-              min-w-full
-              h-full
-              overflow-hidden
-              bg-[#111114]
-            "
+                relative
+                min-w-full
+                h-full
+                overflow-hidden
+                bg-[#111114]
+              "
           >
-            {/* CINEMATIC LIGHT */}
+            {/* LIGHT */}
             <div
               className="
-                absolute
-                inset-0
-
-                bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_65%)]
-              "
+                  absolute
+                  inset-0
+                  bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_65%)]
+                "
             />
 
             {/* IMAGE */}
             <img
-              src={image}
-              alt="Fashion"
+              src={item.image_url}
+              alt={item.title}
               className="
-                absolute
+                  absolute
+                  left-1/2
+                  bottom-0
+                  -translate-x-1/2
 
-                left-1/2
-                bottom-0
+                  h-[88%]
+                  w-auto
 
-                -translate-x-1/2
+                  object-contain
 
-                h-[88%]
-                w-auto
+                  drop-shadow-[0_40px_100px_rgba(0,0,0,0.6)]
 
-                object-contain
-
-                drop-shadow-[0_40px_100px_rgba(0,0,0,0.6)]
-
-                transition-all
-                duration-700
-              "
+                  transition-all
+                  duration-700
+                "
             />
 
-            {/* DARK OVERLAY */}
+            {/* OVERLAY */}
             <div
               className="
-                absolute
-                inset-0
+                  absolute
+                  inset-0
 
-                bg-gradient-to-t
-                from-black/10
-                via-transparent
-                to-transparent
-              "
+                  bg-gradient-to-t
+                  from-black/10
+                  via-transparent
+                  to-transparent
+                "
             />
           </div>
         ))}
       </div>
 
-      {/* FLOATING PRODUCT CARD */}
+      {/* PRODUCT CARD */}
       <div
         className={`
           absolute
@@ -168,6 +196,7 @@ function HeroGallery() {
         `}
         style={{
           left: cardPosition.x - 240,
+
           top: cardPosition.y,
         }}
       >
@@ -180,6 +209,7 @@ function HeroGallery() {
             border-white/10
 
             bg-[#141418]/90
+
             backdrop-blur-xl
 
             p-5
@@ -208,17 +238,23 @@ function HeroGallery() {
               justify-between
             "
           >
-            <p
-              className="
-                text-xl
-                font-semibold
-                text-white
-              "
-            >
+            <p className="text-xl font-semibold text-white">
               {activeProduct.price}
             </p>
-            View product
-            <FiArrowRight size={15} />
+
+            <button
+              className="
+                flex
+                items-center
+                gap-2
+
+                text-sm
+                text-white/70
+              "
+            >
+              View product
+              <FiArrowRight size={15} />
+            </button>
           </div>
         </div>
       </div>
@@ -230,6 +266,7 @@ function HeroGallery() {
           bottom-8
           left-1/2
           -translate-x-1/2
+
           z-20
 
           flex
@@ -242,16 +279,16 @@ function HeroGallery() {
             key={index}
             onClick={() => setCurrent(index)}
             className={`
-              rounded-full
-              transition-all
-              duration-500
+                rounded-full
+                transition-all
+                duration-500
 
-              ${
-                current === index
-                  ? "w-8 h-2 bg-white"
-                  : "w-2 h-2 bg-white/30 hover:bg-white/60"
-              }
-            `}
+                ${
+                  current === index
+                    ? "w-8 h-2 bg-white"
+                    : "w-2 h-2 bg-white/30 hover:bg-white/60"
+                }
+              `}
           />
         ))}
       </div>
