@@ -1,30 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 
 import { FiArrowRight, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 import SectionTitle from "../common/SectionTitle";
 import CategoryCard from "./CategoryCard";
 
-import { getHomepage } from "../../services/homeApi";
-
-function CategorySection() {
+function CategorySection({ categories = [], isLoading = false }) {
   const scrollRef = useRef();
-
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    async function loadCategories() {
-      try {
-        const data = await getHomepage();
-
-        setCategories(data.categories || []);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    loadCategories();
-  }, []);
 
   const scrollLeft = () => {
     scrollRef.current.scrollBy({
@@ -40,7 +22,7 @@ function CategorySection() {
     });
   };
 
-  if (!categories.length) {
+  if (isLoading) {
     return (
       <section className="section-spacing">
         <div className="container-custom">
@@ -49,6 +31,8 @@ function CategorySection() {
       </section>
     );
   }
+
+  if (!categories.length) return null;
 
   return (
     <section className="section-spacing overflow-hidden">

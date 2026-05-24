@@ -1,0 +1,43 @@
+[Unit]
+Description=Valux Store Full Stack (Backend, Frontend, Loophole)
+After=network.target mysql.service
+# Optional: Ensure backend can reach database
+Wants=mysql.service
+
+[Service]
+# Service Type
+Type=simple
+
+# User and Group
+User=srinithish
+Group=srinithish
+
+# Environment variables
+Environment=NODE_ENV=development
+Environment=PATH=/usr/local/bin:/usr/bin:/bin:/home/srinithish/.local/bin
+
+# Working Directory
+WorkingDirectory=/home/srinithish/Documents/projects/E-commerce-Website/valux-store
+
+# Pre-start checks (Ensure dependencies exist)
+ExecStartPre=/usr/bin/test -d /home/srinithish/Documents/projects/E-commerce-Website/valux-store/backend
+ExecStartPre=/usr/bin/test -x /home/srinithish/Documents/projects/E-commerce-Website/valux-store/scripts/valuxstore-start.sh
+
+# Main execution
+ExecStart=/home/srinithish/Documents/projects/E-commerce-Website/valux-store/scripts/valuxstore-start.sh
+
+# Restart logic
+Restart=always
+RestartSec=10
+
+# Shutdown logic
+KillMode=control-group
+TimeoutStopSec=30
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=valuxstore
+
+[Install]
+WantedBy=multi-user.target

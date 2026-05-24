@@ -1,5 +1,7 @@
 import { FiArrowRight } from "react-icons/fi";
 
+const FALLBACK_IMAGE = "/images/products/linen_trousers.png";
+
 function CategoryCard({ item, index }) {
   return (
     <div
@@ -31,6 +33,11 @@ function CategoryCard({ item, index }) {
         <img
           src={item.image}
           alt={item.title}
+          loading="lazy"
+          fetchPriority="low"
+          onError={(event) => {
+            event.currentTarget.src = FALLBACK_IMAGE;
+          }}
           className="
             w-full
             h-full

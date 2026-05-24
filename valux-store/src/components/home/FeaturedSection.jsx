@@ -1,31 +1,10 @@
-import { useEffect, useState } from "react";
-
 import SectionTitle from "../common/SectionTitle";
 import ProductCard from "./ProductCard";
 
 import Button from "../common/Button";
 
-import { getHomepage } from "../../services/homeApi";
-
-function FeaturedSection() {
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-
-  // LOAD DATABASE
-  useEffect(() => {
-    async function loadProducts() {
-      try {
-        const data = await getHomepage();
-
-        setFeaturedProducts(data.featured || []);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    loadProducts();
-  }, []);
-
-  if (!featuredProducts.length) {
+function FeaturedSection({ featuredProducts = [], isLoading = false }) {
+  if (isLoading) {
     return (
       <section className="section-spacing">
         <div className="container-custom">
@@ -34,6 +13,8 @@ function FeaturedSection() {
       </section>
     );
   }
+
+  if (!featuredProducts.length) return null;
 
   const featuredItem = featuredProducts.find((item) => item.featured);
 

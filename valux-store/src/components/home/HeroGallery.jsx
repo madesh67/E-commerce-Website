@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
 
-import { getHomepage } from "../../services/homeApi";
+const FALLBACK_IMAGE = "/images/products/linen_trousers.png";
 
-function HeroGallery() {
+function HeroGallery({ heroImages = [], isLoading = false }) {
   const [current, setCurrent] = useState(0);
-
-  // DATABASE HERO DATA
-  const [heroImages, setHeroImages] = useState([]);
 
   // FLOATING CARD
   const [showCard, setShowCard] = useState(false);
@@ -27,21 +24,6 @@ function HeroGallery() {
 
   const containerRef = useRef(null);
 
-  // LOAD FROM API
-  useEffect(() => {
-    async function loadHero() {
-      try {
-        const data = await getHomepage();
-
-        setHeroImages(data.hero || []);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    loadHero();
-  }, []);
-
   // AUTO SLIDE
   useEffect(() => {
     if (!heroImages.length) return;
@@ -54,10 +36,14 @@ function HeroGallery() {
   }, [heroImages]);
 
   // ACTIVE PRODUCT
-  const activeProduct = heroImages[current] || {};
+  const activeIndex = heroImages.length ? current % heroImages.length : 0;
+
+  const activeProduct = heroImages[activeIndex] ?? {};
 
   // SMOOTH FLOATING
   useEffect(() => {
+    if (!showCard) return undefined;
+
     const animate = () => {
       setCardPosition((prev) => ({
         x: prev.x + (targetPosition.current.x - prev.x) * 0.08,
@@ -71,7 +57,7 @@ function HeroGallery() {
     animate();
 
     return () => cancelAnimationFrame(animationRef.current);
-  }, []);
+  }, [showCard]);
 
   // MOUSE MOVE
   const handleMouseMove = (e) => {
@@ -84,13 +70,15 @@ function HeroGallery() {
     };
   };
 
-  if (!heroImages.length) {
+  if (isLoading) {
     return (
       <div className="h-full flex items-center justify-center text-white/40">
         Loading...
       </div>
     );
   }
+
+  if (!heroImages.length) return null;
 
   return (
     <div
@@ -118,7 +106,7 @@ function HeroGallery() {
           ease-in-out
         "
         style={{
-          transform: `translateX(-${current * 100}%)`,
+          transform: `translateX(-${activeIndex * 100}%)`,
         }}
       >
         {heroImages.map((item, index) => (
@@ -143,8 +131,13 @@ function HeroGallery() {
 
             {/* IMAGE */}
             <img
-              src={item.image_url}
+              src={item.image_url || ""}
               alt={item.title}
+              loading={index === activeIndex ? "eager" : "lazy"}
+              fetchPriority={index === activeIndex ? "high" : "low"}
+              onError={(event) => {
+                event.currentTarget.src = FALLBACK_IMAGE;
+              }}
               className="
                   absolute
                   left-1/2

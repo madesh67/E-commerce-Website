@@ -1,11 +1,11 @@
 import mysql from "mysql2/promise";
 
 const db = mysql.createPool({
-  host: "localhost",
+  host: "127.0.0.1",
 
-  user: "root",
+  user: "valux_api",
 
-  password: "root",
+  password: "valux123",
 
   database: "valux",
 

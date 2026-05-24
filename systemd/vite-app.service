@@ -1,0 +1,15 @@
+[Unit]
+Description=Valux Backend and Vite Preview Server
+After=network.target
+
+[Service]
+Type=simple
+User=srinithish
+WorkingDirectory=/home/srinithish/Documents/projects/E-commerce-Website/valux-store
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/bash /home/srinithish/Documents/projects/E-commerce-Website/systemd/start-vite-app.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

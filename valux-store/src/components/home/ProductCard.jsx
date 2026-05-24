@@ -1,5 +1,7 @@
 import { FiHeart, FiArrowRight } from "react-icons/fi";
 
+const FALLBACK_IMAGE = "/images/products/linen_trousers.png";
+
 function ProductCard({
   title,
   subtitle,
@@ -8,6 +10,8 @@ function ProductCard({
   hoverImage,
   featured = false,
 }) {
+  const hasHoverImage = Boolean(hoverImage && hoverImage !== image);
+
   return (
     <div
       className={`
@@ -66,7 +70,12 @@ function ProductCard({
         <img
           src={image}
           alt={title}
-          className="
+          loading={featured ? "eager" : "lazy"}
+          fetchPriority={featured ? "high" : "low"}
+          onError={(event) => {
+            event.currentTarget.src = FALLBACK_IMAGE;
+          }}
+          className={`
             absolute
             inset-0
             w-full
@@ -76,28 +85,34 @@ function ProductCard({
             transition-all
             duration-700
             group-hover:scale-105
-            group-hover:opacity-0
-          "
+            ${hasHoverImage ? "group-hover:opacity-0" : ""}
+          `}
         />
 
-        {/* HOVER IMAGE */}
-        <img
-          src={hoverImage || image}
-          alt={title}
-          className="
-            absolute
-            inset-0
-            w-full
-            h-full
-            object-contain
-            p-6
-            opacity-0
-            transition-all
-            duration-700
-            group-hover:opacity-100
-            group-hover:scale-105
-          "
-        />
+        {hasHoverImage && (
+          <img
+            src={hoverImage}
+            alt={title}
+            loading="lazy"
+            fetchPriority="low"
+            onError={(event) => {
+              event.currentTarget.src = image || FALLBACK_IMAGE;
+            }}
+            className="
+              absolute
+              inset-0
+              w-full
+              h-full
+              object-contain
+              p-6
+              opacity-0
+              transition-all
+              duration-700
+              group-hover:opacity-100
+              group-hover:scale-105
+            "
+          />
+        )}
       </div>
 
       {/* CONTENT */}

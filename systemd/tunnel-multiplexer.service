@@ -1,0 +1,15 @@
+[Unit]
+Description=Tunnel Multiplexer (Localtunnel & Serveo)
+After=network.target vite-app.service
+Requires=vite-app.service
+
+[Service]
+Type=simple
+User=srinithish
+WorkingDirectory=/home/srinithish
+ExecStart=/usr/bin/python3 /home/srinithish/multiplexer.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

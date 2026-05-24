@@ -1,7 +1,7 @@
 import Button from "../common/Button";
 import HeroGallery from "./HeroGallery";
 
-function Hero() {
+function Hero({ heroImages = [], isLoading = false }) {
   return (
     <div className="container-custom pt-[30px] pb-[80px]">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -54,7 +54,7 @@ function Hero() {
 
         {/* RIGHT SIDE */}
         <div className="h-[600px] rounded-[32px] bg-[#111118] border border-white/10 ">
-          <HeroGallery />
+          <HeroGallery heroImages={heroImages} isLoading={isLoading} />
         </div>
       </div>
     </div>
